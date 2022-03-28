@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>Generaattori</title>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<p>Generaattorin prototyyppi</p>
+  
+<p>Magneettivuon tiheys(B): <input id="magtiheys" value="1"> T</p>
+<p>Pinta-ala(A): <input id="pintaala" value="1"> m&sup2;</p>
+<p>Käämin kierrosluku(N): <input id="kluku" value="1"></p>
+
+<p>Taajuus(&#402;): <input id="taajuus" value="1"> Hz</p>
+<p>Kulmanopeus(&#969;): <input id="knopeus" value="x"> rad/s</p>
+<p>Resistanssi(R): <input id="res" value="1"> &#937</p>
+  
+<br></br>
+  
+<p>Vaihtojännitteen huippuarvo(e&#8320;): <input id="huippuarvo_e"> V</p>
+<p>Vaihtojännitteen huippuarvo(i&#8320;): <input id="huippuarvo_i"> A</p>
+
+<input type="button" value="Päivitä" onclick="update()">
+
+<div id="jannite" style="width:100%;max-width:700px"></div>
+<div id="virta" style="width:100%;max-width:700px"></div>
+
+<script>
+var xValues = [];
+var yValues = [];
+
+var exp = "Math.sin(2*Math.PI*x)";
+
+for (var x = -1000; x <= 1000; x += 0.01) {
+  xValues.push(x);
+  yValues.push(eval(exp));
+}
+
+var data = [{x:xValues, y:yValues, mode:"lines"}];
+var layout_j = {title: {text: "e = e&#8320; sin(2&#960;&#402;t)"}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "jännite(V)"}}};
+Plotly.newPlot("jannite", data, layout_j);
+var layout_v = {title: {text: "i = i&#8320; sin(2&#960;&#402;t)"}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "sähkövirta(A)"}}};
+Plotly.newPlot("virta", data, layout_v);
+
+function update(){
+
+var f, huippuarvo;
+B = parseFloat(document.getElementById("magtiheys").value);
+A = parseFloat(document.getElementById("pintaala").value);
+f = parseFloat(document.getElementById("taajuus").value);
+N = parseFloat(document.getElementById("kluku").value);
+R = parseFloat(document.getElementById("res").value);
+
+e_0 = N*B*A*2*Math.PI*f 
+i_0 = e_0/R
+
+
+document.getElementById("huippuarvo_e").value = e_0;
+document.getElementById("huippuarvo_i").value = i_0;
+
+var exp_U = e_0 + " * Math.sin( 2 * Math.PI * " + f + " * x)";
+var exp_I = i_0 + " * Math.sin( 2 * Math.PI * " + f + " * x)";
+var xValuesU = [];
+var yValuesU = [];
+
+var xValuesI = [];
+var yValuesI = [];
+
+//funktion laskennan muutokset tähän
+//jannite
+for (var x = -200; x <= 200; x += 0.0005) {
+  xValuesU.push(x);
+  yValuesU.push(eval(exp_U));
+}
+
+var data_U = [{x:xValuesU, y:yValuesU, mode:"lines"}];
+var layout_U = {title: {text: "e = " + e_0 + " &#183; sin(2π &#183; " + f + " &#183; t)"}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "jännite(V)"}}};
+
+//sahkovirta
+for (var x = -200; x <= 200; x += 0.0005) {
+  xValuesI.push(x);
+  yValuesI.push(eval(exp_I));
+}
+
+var data_I = [{x:xValuesI, y:yValuesI, mode:"lines"}];
+var layout_I = {title: {text: "i = " + i_0 + " &#183; sin(2π &#183; " + f + " &#183; t)"}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "sähkövirta(A)"}}};
+
+Plotly.react("jannite", data_U, layout_U)
+Plotly.react("virta", data_I, layout_I)
+
+
+
+}
+</script>
+
+</body>
+</html>
