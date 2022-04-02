@@ -9,9 +9,16 @@
     <p>Magneettivuon tiheys(B): <input id="magtiheys" value="1"> T</p>
     <p>Pinta-ala(A): <input id="pintaala" value="1"> m&sup2;</p>
     <p>Käämin kierrosluku(N): <input id="kluku" value="1"></p>
-
-    <p>Taajuus(&#402;): <input id="taajuus" value="1"> Hz</p>
-    <p>Kulmanopeus(&#969;): <input id="knopeus" value="x"> rad/s</p>
+    
+    <input type="radio" id="taj" name="taj_nop" value="taajuus">
+    <label for="taj">Taajuus</label><br>
+    
+    <input type="radio" id="nop" name="taj_nop" value="knopeus">
+    <label for="nop">Kulmanopeus</label><br>
+    
+    <p style="display:none" id="taajuus_kentta">Taajuus(&#402;): <input id="taajuus" value="1"> Hz</p>
+    <p style="display:block" id="knopeus_kentta">Kulmanopeus(&#969;): <input id="knopeus" value="x"> rad/s</p>
+    
     <p>Resistanssi(R): <input id="res" value="1"> &#937</p>
   
     <br></br>
@@ -42,30 +49,69 @@
       var layout_v = {title: {text: "i = i&#8320; sin(2&#960;&#402;t)"}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "sähkövirta(A)"}}};
       Plotly.newPlot("virta", data, layout_v);
 
+      var nappi1 = document.getElementById("taj");
+      var nappi2 = document.getElementById("nop");
+
+      nappi1.onclick = nopeustajuus;
+      nappi2.onclick = nopeustajuus;
+
+      function nopeustajuus(){
+        
+        var nop_vai_taj = document.querySelector('input[name="taj_nop"]:checked').value;
+
+        if (nop_vai_taj == "taajuus") {
+          document.getElementById("taajuus_kentta").style.display = "block";
+          document.getElementById("knopeus_kentta").style.display = "none";
+
+        } else if (nop_vai_taj == "knopeus") {
+          document.getElementById("taajuus_kentta").style.display = "none";
+          document.getElementById("knopeus_kentta").style.display = "block";
+        }
+      }
+
       function update(){
 
-        var f, huippuarvo;
         B = parseFloat(document.getElementById("magtiheys").value);
         A = parseFloat(document.getElementById("pintaala").value);
-        f = parseFloat(document.getElementById("taajuus").value);
         N = parseFloat(document.getElementById("kluku").value);
         R = parseFloat(document.getElementById("res").value);
 
-        e_0 = N*B*A*2*Math.PI*f 
-        i_0 = e_0/R
+        nop_vai_taj = document.querySelector('input[name="taj_nop"]:checked').value;
 
+        if (nop_vai_taj == "taajuus") {
+          f = parseFloat(document.getElementById("taajuus").value);
+          e_0 = N*B*A*2*Math.PI*f
 
-        document.getElementById("huippuarvo_e").value = e_0;
-        document.getElementById("huippuarvo_i").value = i_0;
+          i_0 = e_0/R
 
-        var exp_U = e_0 + " * Math.sin( 2 * Math.PI * " + f + " * x)";
-        var exp_I = i_0 + " * Math.sin( 2 * Math.PI * " + f + " * x)";
+          var exp_U = `${e_0} * Math.sin( 2 * Math.PI * ${f} * x)`;
+          var exp_I = `${i_0} * Math.sin( 2 * Math.PI * ${f} * x)`;
+
+          var teksti_U = `e = ${e_0} &#183; sin(2π &#183; ${f} &#183; t)`
+          var teksti_I = `e = ${i_0} &#183; sin(2π &#183; ${f} &#183; t)`
+
+        } else if (nop_vai_taj == "knopeus") {
+          w = parseFloat(document.getElementById("knopeus").value);
+          e_0 = N*B*A*w
+          i_0 = e_0/R
+
+          var exp_U = `${e_0} * Math.sin( ${w} * x)`;
+          var exp_I = `${i_0} * Math.sin( ${w} * x)`;
+
+          var teksti_U = `e = ${e_0} &#183; sin( ${w} &#183; t)`
+          var teksti_I = `e = ${i_0} &#183; sin( ${w} &#183; t)`
+
+        }
+
 
         var xValuesU = [];
         var yValuesU = [];
         
         var xValuesI = [];
         var yValuesI = [];
+
+        document.getElementById("huippuarvo_e").value = e_0;
+        document.getElementById("huippuarvo_i").value = i_0;
 
         //funktion laskennan muutokset tähän
 
@@ -76,7 +122,7 @@
         }
 
         var data_U = [{x:xValuesU, y:yValuesU, mode:"lines"}];
-        var layout_U = {title: {text: "e = " + e_0 + " &#183; sin(2π &#183; " + f + " &#183; t)"}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "jännite(V)"}}};
+        var layout_U = {title: {text: teksti_U}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "jännite(V)"}}};
 
         //sahkovirta
         for (var x = -200; x <= 200; x += 0.0005) {
@@ -85,7 +131,7 @@
         }
 
         var data_I = [{x:xValuesI, y:yValuesI, mode:"lines"}];
-        var layout_I = {title: {text: "i = " + i_0 + " &#183; sin(2π &#183; " + f + " &#183; t)"}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "sähkövirta(A)"}}};
+        var layout_I = {title: {text: teksti_I}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "sähkövirta(A)"}}};
 
         Plotly.react("jannite", data_U, layout_U)
         Plotly.react("virta", data_I, layout_I)
