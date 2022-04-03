@@ -77,6 +77,8 @@
 
           i_0 = e_0/R
 
+          aallonpituus = (2*Math.PI)/(2*Math.PI*f)
+
           var exp_U = `${e_0} * Math.sin( 2 * Math.PI * ${f} * x)`;
           var exp_I = `${i_0} * Math.sin( 2 * Math.PI * ${f} * x)`;
 
@@ -87,6 +89,8 @@
           w = parseFloat(document.getElementById("knopeus").value);
           e_0 = N*B*A*w
           i_0 = e_0/R
+
+          aallonpituus = (2*Math.PI)/(w)
 
           var exp_U = `${e_0} * Math.sin( ${w} * x)`;
           var exp_I = `${i_0} * Math.sin( ${w} * x)`;
@@ -106,25 +110,26 @@
         document.getElementById("huippuarvo_e").value = e_0;
         document.getElementById("huippuarvo_i").value = i_0;
 
-        //funktion laskennan muutokset tähän
+        ekstrapoli = Math.floor(aallonpituus*50)
+        tarkkuus = aallonpituus/1000
 
         //jannite
-        for (var x = -200; x <= 200; x += 0.0005) {
+        for (var x = -ekstrapoli; x <= ekstrapoli; x += tarkkuus) {
           xValuesU.push(x);
           yValuesU.push(eval(exp_U));
         }
 
         var data_U = [{x:xValuesU, y:yValuesU, mode:"lines"}];
-        var layout_U = {title: {text: teksti_U}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "jännite(V)"}}};
+        var layout_U = {title: {text: teksti_U}, xaxis: {title: {text: "aika(s)"}, range: [0, aallonpituus*2.5]}, yaxis: {title: {text: "jännite(V)"}}};
 
         //sahkovirta
-        for (var x = -200; x <= 200; x += 0.0005) {
+        for (var x = -ekstrapoli; x <= ekstrapoli; x += tarkkuus) {
           xValuesI.push(x);
           yValuesI.push(eval(exp_I));
         }
 
         var data_I = [{x:xValuesI, y:yValuesI, mode:"lines"}];
-        var layout_I = {title: {text: teksti_I}, xaxis: {title: {text: "aika(s)"}, range: [0, 10]}, yaxis: {title: {text: "sähkövirta(A)"}}};
+        var layout_I = {title: {text: teksti_I}, xaxis: {title: {text: "aika(s)"}, range: [0, aallonpituus*2.5]}, yaxis: {title: {text: "sähkövirta(A)"}}};
 
         Plotly.react("jannite", data_U, layout_U)
         Plotly.react("virta", data_I, layout_I)
