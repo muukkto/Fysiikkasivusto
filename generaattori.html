@@ -2,31 +2,35 @@
   <head>
     <title>Generaattori</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="tyyli.css">
   </head>
   <body>
-    <p>Generaattorin prototyyppi</p>
+    <h1>Generaattorin</h1>
   
-    <p>Magneettivuon tiheys(B): <input id="magtiheys" value="1"> T</p>
-    <p>Pinta-ala(A): <input id="pintaala" value="1"> m&sup2;</p>
-    <p>Käämin kierrosluku(N): <input id="kluku" value="1"></p>
+    <div id="BANR">
+      <p>Magneettivuon tiheys(B): <input id="magtiheys" value="1"> T</p>
+      <p>Pinta-ala(A): <input id="pintaala" value="1"> m&sup2;</p>
+      <p>Käämin kierrosluku(N): <input id="kluku" value="1"></p>
+      <p>Resistanssi(R): <input id="res" value="1"> &#937</p>
+    </div>
     
-    <input type="radio" id="nop" name="taj_nop" value="knopeus" checked>
-    <label for="nop">Kulmanopeus</label><br>
+    <div id="Wf">
+      <input type="radio" id="nop" name="taj_nop" value="knopeus" checked>
+      <label for="nop">Kulmanopeus</label><br>
 
-    <input type="radio" id="taj" name="taj_nop" value="taajuus">
-    <label for="taj">Taajuus</label><br>
+      <input type="radio" id="taj" name="taj_nop" value="taajuus">
+      <label for="taj">Taajuus</label><br>
     
-    <p style="display:none" id="taajuus_kentta">Taajuus(&#402;): <input id="taajuus" value="1"> Hz</p>
-    <p style="display:block" id="knopeus_kentta">Kulmanopeus(&#969;): <input id="knopeus" value="1"> rad/s</p>
-    
-    <p>Resistanssi(R): <input id="res" value="1"> &#937</p>
+      <p style="display:none" id="taajuus_kentta">Taajuus(&#402;): <input id="taajuus" value="1"> Hz</p>
+      <p style="display:block" id="knopeus_kentta">Kulmanopeus(&#969;): <input id="knopeus" value="1"> rad/s</p>
+    </div>
   
-    <br></br>
-  
-    <p>Vaihtojännitteen huippuarvo(e&#8320;): <input id="huippuarvo_e"> V</p>
-    <p>Vaihtojännitteen huippuarvo(i&#8320;): <input id="huippuarvo_i"> A</p>
+    <div id="ei">
+      <p>Vaihtojännitteen huippuarvo(e&#8320;): <input id="huippuarvo_e"> V</p>
+      <p>Vaihtojännitteen huippuarvo(i&#8320;): <input id="huippuarvo_i"> A</p>
+    </div>
 
-    <input type="button" value="Päivitä" onclick="update()">
+    <input id="nappi" type="button" value="Päivitä" onclick="update()">
 
     <div id="jannite" style="width:50%;max-width:700px"></div>
     <div id="virta" style="width:50%;max-width:700px"></div>
@@ -110,7 +114,7 @@
         document.getElementById("huippuarvo_e").value = e_0;
         document.getElementById("huippuarvo_i").value = i_0;
 
-        ekstrapoli = Math.floor(aallonpituus*50)
+        ekstrapoli = aallonpituus*50
         tarkkuus = aallonpituus/1000
 
         //jannite
